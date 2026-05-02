@@ -1,0 +1,11 @@
+# Ignore database, video files, snapshots, and model weights — keep folder structure
+*.sqlite3
+videos/*.mp4
+videos/*.avi
+videos/*.mov
+videos/*.mkv
+snapshots/*.jpg
+snapshots/*.png
+models/*.pth
+models/*.pt
+models/*.ckpt

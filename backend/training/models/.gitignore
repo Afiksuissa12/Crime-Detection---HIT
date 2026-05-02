@@ -1,0 +1,4 @@
+# Exclude trained model weights (can be large) — commit only the folder structure
+*.pth
+*.pt
+*.ckpt
