@@ -1,7 +1,13 @@
+from pathlib import Path
 from typing import Optional, Union
-from fastapi import APIRouter
+
+from fastapi import APIRouter, HTTPException, UploadFile, File
 from pydantic import BaseModel
+
 from app.services.video_ingestion import video_service
+
+UPLOAD_DIR = Path("data/videos/uploads")
+ALLOWED_EXTENSIONS = {".mp4", ".avi", ".mov", ".mkv"}
 
 router = APIRouter(tags=["video"])
 
@@ -85,3 +91,19 @@ def stop_video():
 @router.get("/video/status", response_model=VideoStatus)
 def video_status():
     return video_service.get_status()
+
+
+@router.post("/video/upload")
+async def upload_video(file: UploadFile = File(...)):
+    suffix = Path(file.filename).suffix.lower()
+    if suffix not in ALLOWED_EXTENSIONS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported file type '{suffix}'. Allowed: {', '.join(ALLOWED_EXTENSIONS)}",
+        )
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    dest = UPLOAD_DIR / file.filename
+    contents = await file.read()
+    dest.write_bytes(contents)
+    source = f"data/videos/uploads/{file.filename}"
+    return {"message": "File uploaded", "filename": file.filename, "source": source}

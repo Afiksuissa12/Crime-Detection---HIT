@@ -15,6 +15,7 @@ RUN python -c "from ultralytics import YOLO; YOLO('yolov8n.pt')"
 
 COPY . .
 
-RUN mkdir -p /app/data
+RUN mkdir -p /app/data /app/static && \
+    python -c "import urllib.request; urllib.request.urlretrieve('https://cdn.jsdelivr.net/npm/redoc@2.1.3/bundles/redoc.standalone.js', '/app/static/redoc.standalone.js')"
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
